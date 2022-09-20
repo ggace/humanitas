@@ -1,0 +1,53 @@
+DROP DATABASE IF EXISTS naver;
+CREATE DATABASE naver;
+USE naver;
+
+DROP TABLE IF EXISTS temp_table;
+CREATE TABLE temp_table(
+    id INT(10) PRIMARY KEY AUTO_INCREMENT,
+    `text` VARCHAR(100) NOT NULL,
+    `click` INT(10) NOT NULL,
+    `regDate` DATETIME(3) NOT NULL
+);
+
+DROP PROCEDURE IF EXISTS myFunction;
+
+DELIMITER $$ 
+CREATE PROCEDURE myFunction() -- ⓐ myFunction이라는 이름의 프로시져
+BEGIN
+    DECLARE i INT DEFAULT 1; -- ⓑ i변수 선언, defalt값으로 1설정
+    WHILE (i <= 1000) DO -- ⓒ for문 작성(i가 1000이 될 때까지 반복)
+        INSERT INTO temp_table(`text`, `click`, `regDate`)
+        VALUES (
+            CONCAT(CHAR(CAST(RAND() * 26 AS UNSIGNED) + 97 ), " ",CHAR(CAST(RAND() * 26 AS UNSIGNED) + 97 ), " ",CHAR(CAST(RAND() * 26 AS UNSIGNED) + 97 ), " ",CHAR(CAST(RAND() * 26 AS UNSIGNED) + 97 ), " ",CHAR(CAST(RAND() * 26 AS UNSIGNED) + 97 ), " ",CHAR(CAST(RAND() * 26 AS UNSIGNED) + 97 ), " ",CHAR(CAST(RAND() * 26 AS UNSIGNED) + 97 ), " ",CHAR(CAST(RAND() * 26 AS UNSIGNED) + 97 ), " ",CHAR(CAST(RAND() * 26 AS UNSIGNED) + 97 ), " ",CHAR(CAST(RAND() * 26 AS UNSIGNED) + 97 ), " ",CHAR(CAST(RAND() * 26 AS UNSIGNED) + 97 ), " ",CHAR(CAST(RAND() * 26 AS UNSIGNED) + 97 ), " ",CHAR(CAST(RAND() * 26 AS UNSIGNED) + 97 ), " ",CHAR(CAST(RAND() * 26 AS UNSIGNED) + 97 ), " ",CHAR(CAST(RAND() * 26 AS UNSIGNED) + 97 ), " ",CHAR(CAST(RAND() * 26 AS UNSIGNED) + 97 ), " ",CHAR(CAST(RAND() * 26 AS UNSIGNED) + 97 ), " ",CHAR(CAST(RAND() * 26 AS UNSIGNED) + 97 ), " "),
+            CAST(RAND() * 1000 AS UNSIGNED),
+            NOW(3)
+        );
+        SET i = i + 1; -- ⓔ i값에 1더해주고 WHILE문 처음으로 이동
+    END WHILE;
+END$$
+DELIMITER ;
+
+CALL myFunction();
+
+SELECT * FROM temp_table;
+
+#클릭별 보기
+SELECT * FROM temp_table
+ORDER BY `click` DESC
+
+#최신순
+SELECT * FROM temp_table
+ORDER BY `regDate` DESC
+
+#오랜순
+SELECT * FROM temp_table
+ORDER BY `regDate` ASC
+
+#관련도 순
+SELECT * FROM temp_table
+WHERE `text` LIKE '%a%'
+AND `text` LIKE '%b%'
+AND `text` LIKE '%c%'
+ORDER BY click DESC
+
